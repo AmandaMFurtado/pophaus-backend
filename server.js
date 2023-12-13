@@ -18,7 +18,16 @@ const db = knex(knexConfig);
 // Rota para listar todos os ingressos
 app.get('/listagem-ingressos', async (req, res) => {
   try {
-    const tickets = await db('tickets_und').select('*');
+    const { startDate } = req.query;
+
+    let query = db('tickets_und').select(['date', 'created_at', 'filial', 'price', 'ticket_time', 'status']);
+
+    if (startDate) {
+      // Filtra por data no campo 'date' OU 'created_at'
+      query = query.where('date', '=', startDate).orWhereRaw("DATE(created_at AT TIME ZONE 'UTC') = ?", [startDate]);
+    }
+
+    const tickets = await query;
     res.json(tickets);
   } catch (error) {
     res.status(500).json({ error: 'Erro ao buscar ingressos' });
