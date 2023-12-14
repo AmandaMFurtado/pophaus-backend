@@ -1,13 +1,10 @@
-// server.js
-
 const express = require('express');
-const cors = require('cors'); // Adicione esta linha
+const cors = require('cors');
 const app = express();
 const port = 3000;
 
 app.use(express.json());
 app.use(cors());
-
 app.use(express.json());
 
 // Configuração do Knex
@@ -15,7 +12,6 @@ const knex = require('knex');
 const knexConfig = require('./knexfile');
 const db = knex(knexConfig);
 
-// Rota para listar todos os ingressos
 app.get('/listagem-ingressos', async (req, res) => {
   try {
     const { startDate } = req.query;
@@ -23,7 +19,6 @@ app.get('/listagem-ingressos', async (req, res) => {
     let query = db('tickets_und').select(['date', 'created_at', 'filial', 'price', 'ticket_time', 'status']);
 
     if (startDate) {
-      // Filtra por data no campo 'date' OU 'created_at'
       query = query.where('date', '=', startDate).orWhereRaw("DATE(created_at AT TIME ZONE 'UTC') = ?", [startDate]);
     }
 
@@ -34,7 +29,7 @@ app.get('/listagem-ingressos', async (req, res) => {
   }
 });
 
-// Rota para contar ingressos por status
+
 app.get('/contagem-ingressos-status', async (req, res) => {
   try {
     const countByStatus = await db('tickets_und')
@@ -52,7 +47,7 @@ app.get('/contagem-ingressos-status', async (req, res) => {
 });
 
 
-// Rota para contar ingressos por unidade
+
 app.get('/contagem-ingressos-unidade', async (req, res) => {
   try {
     const countByUnity = await db('unities')
@@ -67,7 +62,7 @@ app.get('/contagem-ingressos-unidade', async (req, res) => {
   }
 });
 
-// Rota para somar o total de vendas por unidade
+
 app.get('/soma-total-vendas-unidade', async (req, res) => {
   try {
     const totalSalesByUnity = await db('unities')
@@ -83,7 +78,7 @@ app.get('/soma-total-vendas-unidade', async (req, res) => {
   }
 });
 
-// Rota para contar ingressos por usuário
+
 app.get('/contagem-ingressos-usuario', async (req, res) => {
   try {
     const countByUser = await db('tickets_und')
@@ -97,7 +92,6 @@ app.get('/contagem-ingressos-usuario', async (req, res) => {
   }
 });
 
-// Rota para listar todos os horários
 app.get('/listagem-horarios', async (req, res) => {
   try {
     const { data = new Date().toISOString().split('T')[0] } = req.query;
@@ -112,7 +106,7 @@ app.get('/listagem-horarios', async (req, res) => {
   }
 });
 
-// Rota para listar as data que o usuario esteve no parque
+
 app.get('/datas', async (req, res) => {
   try {
     const { email } = req.query;
@@ -134,6 +128,6 @@ app.get('/datas', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
+app.listen(port,'0.0.0.0', () => {
   console.log(`Server running at http://localhost:${port}`);
 });
